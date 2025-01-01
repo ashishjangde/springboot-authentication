@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           google:
-            clientId: 918573488539-jguub6ffg4k9ja5g648l5qnhqtl9jun9.apps.googleusercontent.com
+            clientId: 918573488539-jguub6ffg4k9ja5g648l5qnhqtl9jun9.apps.googleusercontent.com  // these are fake values for examples
             clientSecret: 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
           github:
-            clientId: 4b3b4b3b4b3b4b3b4b3b
+            clientId: 4b3b4b3b4b3b4b3b4b3b                 // this too
             clientSecret: dsdfksdjfksdfdfsdfsdfsdfsdfsd
