@@ -33,13 +33,15 @@ public class UserEntity implements UserDetails {
     @Column(unique = true)
     private String email;
 
-    private Boolean isVerified;
+    private Boolean isVerified = false;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<Roles> roles;
 
-    private String verificationToken;
+    private String verificationCode;
+
+    private LocalDateTime verificationCodeExpiresAt;
 
     private String password;
 

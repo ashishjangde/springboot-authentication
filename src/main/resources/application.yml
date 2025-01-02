@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           google:
-            clientId: 918573488539-jguub6ffg4k9ja5g648l5qnhqtl9jun9.apps.googleusercontent.com  // these are fake values for examples
-            clientSecret: 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
+            clientId: "${GOOGLE_CLIENT_ID}" # Environment variable or external config
+            clientSecret: "${GOOGLE_CLIENT_SECRET}" # Use environment variable or external config
           github:
-            clientId: 4b3b4b3b4b3b4b3b4b3b                 // this too
-            clientSecret: dsdfksdjfksdfdfsdfsdfsdfsdfsd
+            clientId: "${GITHUB_CLIENT_ID}" # Use environment variable or external config
+            clientSecret: "${GITHUB_CLIENT_SECRET}" # Use environment variable or external config

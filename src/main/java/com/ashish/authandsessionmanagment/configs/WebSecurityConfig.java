@@ -2,12 +2,7 @@ package com.ashish.authandsessionmanagment.configs;
 
 import com.ashish.authandsessionmanagment.filters.JwtAuthenticationFilter;
 import com.ashish.authandsessionmanagment.handlers.OAuth2Handler;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,8 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
-import java.io.IOException;
-import java.util.Arrays;
+
 import java.util.List;
 
 
@@ -57,7 +51,6 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuthLogin -> oAuthLogin
                         .failureUrl("/login?error=true")
-                        .loginPage("/auth/login")
                         .successHandler(oAuth2Handler)
                         .permitAll() // Allow OAuth2 login for any request that triggers OAuth2 login
                 );
@@ -68,8 +61,8 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L); // Add cache for CORS preflight requests
 
