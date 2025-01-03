@@ -47,4 +47,11 @@ public class SessionService {
         sessionRepository.save(session);
         return true;
     }
+
+    public boolean invalidateSession(String refreshToken) {
+        SessionEntity session = sessionRepository.findByRefreshToken(refreshToken).orElse(null);
+        if (session == null) return false;
+        sessionRepository.delete(session);
+        return true;
+    }
 }

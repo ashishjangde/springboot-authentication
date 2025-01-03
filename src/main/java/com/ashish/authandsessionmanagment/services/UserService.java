@@ -2,6 +2,7 @@ package com.ashish.authandsessionmanagment.services;
 
 import com.ashish.authandsessionmanagment.dto.SignupDto;
 import com.ashish.authandsessionmanagment.dto.UserDto;
+import com.ashish.authandsessionmanagment.dto.UserVerificationDto;
 import com.ashish.authandsessionmanagment.entities.UserEntity;
 import com.ashish.authandsessionmanagment.entities.enums.Roles;
 import com.ashish.authandsessionmanagment.exceptions.ResourceNotFoundException;
@@ -68,5 +69,18 @@ public class UserService implements UserDetailsService {
         //send verification email
         userRepository.save(userEntity);
         return modelMapper.map(userRepository.save(userEntity), UserDto.class);
+    }
+
+    public String verifyUser(UserVerificationDto userVerificationDto) {
+        UserEntity userEntity = userRepository.findByEmail(userVerificationDto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userVerificationDto.getEmail()));
+        if (userEntity.getVerificationCode().equals(userVerificationDto.getVerificationCode()) && userEntity.getVerificationCodeExpiresAt().isAfter(LocalDateTime.now())) {
+            userEntity.setIsVerified(true);
+            userEntity.setVerificationCode(null);
+            userEntity.setVerificationCodeExpiresAt(null);
+       return "User with email: " + userVerificationDto.getEmail() + " verified successfully";
+        } else {
+            throw new BadCredentialsException("Invalid verification code");
+        }
     }
 }
