@@ -21,7 +21,7 @@ public class CookiesUtils {
 
     private  final JwtService jwtService;
 
-    public static String getCookieValue(String cookieName, HttpServletRequest request) {
+    public  String getCookieValue(String cookieName, HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {

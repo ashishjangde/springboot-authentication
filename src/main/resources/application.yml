@@ -9,3 +9,4 @@ spring:
           github:
             clientId: "${GITHUB_CLIENT_ID}" # Use environment variable or external config
             clientSecret: "${GITHUB_CLIENT_SECRET}" # Use environment variable or external config
+

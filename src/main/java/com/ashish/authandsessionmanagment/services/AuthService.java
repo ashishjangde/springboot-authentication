@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     public UserDto refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = CookiesUtils.getCookieValue("refreshToken", request);
+        String refreshToken = cookiesUtils.getCookieValue("refreshToken", request);
         boolean isValidToken = jwtService.validateToken(refreshToken);
         if (!isValidToken) {
             throw new JwtException("Invalid token");
@@ -71,7 +71,7 @@ public class AuthService {
     }
 
     public boolean logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = CookiesUtils.getCookieValue("refreshToken", request);
+        String refreshToken = cookiesUtils.getCookieValue("refreshToken", request);
         boolean session = sessionService.invalidateSession(refreshToken);
         if (!session) {
             throw new RuntimeException("Session not found");

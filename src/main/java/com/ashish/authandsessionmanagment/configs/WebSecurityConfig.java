@@ -35,7 +35,14 @@ public class WebSecurityConfig {
 
 
     private static final String[] publicPaths = {
-            "/auth/**","/error" ,"/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","/home.html"
+            "/auth/**",              // Allow all authentication-related paths (including refresh)
+            "/error",                // Allow error handling without authentication
+            "/v3/api-docs/**",       // Swagger UI docs should be publicly available
+            "/swagger-ui/**",        // Swagger UI assets
+            "/swagger-ui.html",      // Swagger UI HTML page
+            "/home.html",            // Public home page
+            "/oauth2/**",            // OAuth2 login routes
+            "/auth/refresh"          // Allow refresh token endpoint without authentication
     };
 
     @Bean
@@ -43,19 +50,19 @@ public class WebSecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfiguration()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicPaths).permitAll() // Allow public paths without authentication
-                        .anyRequest().authenticated() // All other requests require authentication
+                        .anyRequest().authenticated()            // All other requests require authentication
                 )
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection for REST APIs
-                .formLogin(AbstractHttpConfigurer::disable) // Disable form-based login
+                .csrf(AbstractHttpConfigurer::disable)         // Disable CSRF protection for REST APIs
+                .formLogin(AbstractHttpConfigurer::disable)   // Disable form-based login
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT authentication filter
                 .oauth2Login(oAuthLogin -> oAuthLogin
                         .failureUrl("/login?error=true")
                         .successHandler(oAuth2Handler)
-                        .permitAll() // Allow OAuth2 login for any request that triggers OAuth2 login
                 );
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfiguration() {

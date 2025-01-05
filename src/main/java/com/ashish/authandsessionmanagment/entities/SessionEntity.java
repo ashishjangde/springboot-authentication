@@ -20,7 +20,7 @@ public class SessionEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(unique = true)
+    @Column(unique = true , length = 512)
     private String refreshToken;
 
     @ManyToOne

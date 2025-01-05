@@ -4,6 +4,8 @@ import com.ashish.authandsessionmanagment.exceptions.ResourceNotFoundException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -51,6 +53,41 @@ public class GlobalExceptionHandler {
 
       return handelReturnStatement(apiError);
    }
+
+   @ExceptionHandler(IllegalArgumentException.class)
+   public ResponseEntity<ApiResponse<ApiError>> handelIllegalArgumentException(IllegalArgumentException e){
+       ApiError apiError = ApiError.builder()
+               .status(HttpStatus.NOT_ACCEPTABLE)
+               .message(e.getMessage())
+               .build();
+       return handelReturnStatement(apiError);
+   }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handelBadCredentialsException(BadCredentialsException e){
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.NOT_ACCEPTABLE)
+                .message(e.getMessage())
+                .build();
+        return handelReturnStatement(apiError);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handelRuntimeException(RuntimeException e){
+       ApiError apiError = ApiError.builder()
+               .status(HttpStatus.BAD_REQUEST)
+               .message(e.getMessage())
+               .build();
+       return handelReturnStatement(apiError);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<ApiError>> handelRequestMethodNotSupported(HttpRequestMethodNotSupportedException e){
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .message(e.getMessage())
+                .build();
+        return handelReturnStatement(apiError);
+    }
+
 
    @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<ApiError>> handleNoResourceFoundException(NoResourceFoundException e) {

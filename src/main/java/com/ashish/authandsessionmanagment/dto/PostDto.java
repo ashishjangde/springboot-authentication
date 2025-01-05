@@ -2,12 +2,11 @@ package com.ashish.authandsessionmanagment.dto;
 
 
 import com.ashish.authandsessionmanagment.entities.UserEntity;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import net.minidev.json.annotate.JsonIgnore;
+
 
 import java.time.LocalDateTime;
 
@@ -24,7 +23,7 @@ public class PostDto {
 
     private String content;
 
-    private UserEntity author;
+    private UserDto author;
 
     private LocalDateTime createdAt;
 

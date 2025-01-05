@@ -18,7 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import static com.ashish.authandsessionmanagment.entities.enums.Roles.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -45,39 +49,47 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(()->new ResourceNotFoundException("User not found with email: " + email));
     }
 
-    public UserDto signupUser(SignupDto signupDto){
-       UserEntity existingUser = userRepository.findByEmail(signupDto.getEmail()).orElse(null);
+    public UserDto signupUser(SignupDto signupDto) {
+        UserEntity existingUser = userRepository.findByEmail(signupDto.getEmail()).orElse(null);
         String verificationCode = VerificationCodeGenerator.generateCode();
         LocalDateTime codeExpiresAt = LocalDateTime.now().plusMinutes(10);
-        if (existingUser != null){
-            if (existingUser.getIsVerified()){
+
+        if (existingUser != null) {
+            if (existingUser.getIsVerified()) {
                 throw new BadCredentialsException("User with email: " + signupDto.getEmail() + " already exists");
-            }
-            else {
-                return saveAndReturnSignupDto(signupDto, verificationCode, codeExpiresAt);
+            } else {
+                // Update the existing unverified user's data
+                existingUser.setVerificationCode(verificationCode);
+                existingUser.setVerificationCodeExpiresAt(codeExpiresAt);
+                existingUser.setPassword(passwordEncoder.encode(signupDto.getPassword())); // Optional: reset password
+                userRepository.save(existingUser);
+                // Send verification email
+                return modelMapper.map(existingUser, UserDto.class);
             }
         }
-        return saveAndReturnSignupDto(signupDto, verificationCode, codeExpiresAt);
-    }
 
-    private UserDto saveAndReturnSignupDto(SignupDto signupDto, String verificationCode, LocalDateTime codeExpiresAt) {
+        // Create a new user if no existing user found
         UserEntity userEntity = modelMapper.map(signupDto, UserEntity.class);
         userEntity.setVerificationCode(verificationCode);
         userEntity.setVerificationCodeExpiresAt(codeExpiresAt);
         userEntity.setPassword(passwordEncoder.encode(signupDto.getPassword()));
-        userEntity.setRoles(Set.of(Roles.USER));
-        //send verification email
+        userEntity.setRoles(new HashSet<>(List.of(Roles.USER)));
         userRepository.save(userEntity);
-        return modelMapper.map(userRepository.save(userEntity), UserDto.class);
+        // Send verification email
+        return modelMapper.map(userEntity, UserDto.class);
     }
+
+
 
     public String verifyUser(UserVerificationDto userVerificationDto) {
         UserEntity userEntity = userRepository.findByEmail(userVerificationDto.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userVerificationDto.getEmail()));
+        if (userEntity.getIsVerified()) throw new BadCredentialsException("user with " + userVerificationDto.getEmail() + " is already verified");
         if (userEntity.getVerificationCode().equals(userVerificationDto.getVerificationCode()) && userEntity.getVerificationCodeExpiresAt().isAfter(LocalDateTime.now())) {
             userEntity.setIsVerified(true);
             userEntity.setVerificationCode(null);
             userEntity.setVerificationCodeExpiresAt(null);
+            userRepository.save(userEntity);
        return "User with email: " + userVerificationDto.getEmail() + " verified successfully";
         } else {
             throw new BadCredentialsException("Invalid verification code");

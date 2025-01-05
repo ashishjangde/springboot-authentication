@@ -1,5 +1,6 @@
 package com.ashish.authandsessionmanagment.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,8 +26,9 @@ public class PostEntity {
 
     private String content;
 
-    @ManyToOne()
-    @JoinColumn(name = "author_id" , nullable = false)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
     private UserEntity author;
 
     @CreationTimestamp

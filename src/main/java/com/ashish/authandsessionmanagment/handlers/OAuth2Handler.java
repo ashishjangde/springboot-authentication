@@ -25,7 +25,7 @@ import java.util.Set;
 @Component
 public class OAuth2Handler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtService jwtService;
-    @Value("${SPRING.DEPLOYMENT_MODE}")
+    @Value("${SPRING.DEPLOYMENT_STATUS}")
     private String DEPLOYMENT_MODE;
 
     private final UserService userService;

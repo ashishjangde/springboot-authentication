@@ -1,11 +1,14 @@
 package com.ashish.authandsessionmanagment.controllers;
 
 import com.ashish.authandsessionmanagment.advices.ApiResponse;
+import com.ashish.authandsessionmanagment.dto.PostCreateDto;
 import com.ashish.authandsessionmanagment.dto.PostDto;
-import com.ashish.authandsessionmanagment.repositories.PostRepository;
 import com.ashish.authandsessionmanagment.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,19 +28,22 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable String id, @RequestBody PostDto postDto){
+    @PreAuthorize("@postOwnByAuthor.isPostOwnByAuthor(#id) and hasAuthority('POST_UPDATE')")
+    public ResponseEntity<PostDto> updatePost(@PathVariable String id, @RequestBody PostCreateDto postDto){
         PostDto post = postService.updatePostById(id, postDto);
         if(post == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(post);
     }
 
     @GetMapping()
+    @PreAuthorize("hasRole('ROLE_CREATOR')")
     public ResponseEntity<List<PostDto>> getAllPosts(){
         List<PostDto> posts = postService.getAllPosts();
         if(posts == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(posts);
     }
     @GetMapping("/author/{authorId}")
+    @PreAuthorize("hasAuthority('POST_VIEW')")
     public ResponseEntity<List<PostDto>> getPostsByAuthor(@PathVariable String authorId){
         List<PostDto> posts = postService.getPostsByAuthorId(authorId);
         if(posts == null) return ResponseEntity.notFound().build();
@@ -45,13 +51,15 @@ public class PostController {
     }
 
     @PostMapping()
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
-        PostDto post = postService.createPost(postDto);
+    @Secured("ROLE_CREATOR")
+    public ResponseEntity<PostDto> createPost(@RequestBody PostCreateDto postCreateDto){
+        PostDto post = postService.createPost(postCreateDto);
         if(post == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(post);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@postOwnByAuthor.isPostOwnByAuthor(#id) and hasAuthority('POST_DELETE')")
     public ResponseEntity<ApiResponse<Boolean>> deletePost(@PathVariable String id){
         boolean isDeleted = postService.deletePostById(id);
         if(!isDeleted) return ResponseEntity.notFound().build();

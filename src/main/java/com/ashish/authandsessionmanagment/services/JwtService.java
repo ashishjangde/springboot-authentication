@@ -34,9 +34,6 @@ public class JwtService {
     public String generateRefreshToken(UserEntity userEntity) {
         return Jwts.builder()
                 .subject(userEntity.getId())
-                .claim("name", userEntity.getName())
-                .claim("email", userEntity.getEmail())
-                .claim("role", userEntity.getRoles())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 365  ) ) // 1 year
                 .signWith(getSecretKet())

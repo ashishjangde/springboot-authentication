@@ -3,6 +3,7 @@ package com.ashish.authandsessionmanagment.entities;
 
 import com.ashish.authandsessionmanagment.entities.enums.Roles;
 import com.ashish.authandsessionmanagment.utlis.PermissionsMappings;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,7 +39,7 @@ public class UserEntity implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Roles> roles;
+    private Set<Roles> roles ;// Initialized as mutable collection
 
     private String verificationCode;
 
